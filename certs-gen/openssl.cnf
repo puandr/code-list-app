@@ -1,0 +1,84 @@
+[ ca ]                                                   # The default CA section
+default_ca = CA_default                                  # The default CA name
+
+[ CA_default ]                                           # Default settings for the CA
+dir               = /certs             # CA directory
+certs             = $dir/certs                           # Certificates directory
+crl_dir           = $dir/crl                             # CRL directory
+new_certs_dir     = $dir/newcerts                        # New certificates directory
+database          = $dir/index.txt                       # Certificate index file
+serial            = $dir/serial                          # Serial number file
+RANDFILE          = $dir/private/.rand                   # Random number file
+private_key       = $dir/private/ca.key                  # Root CA private key
+certificate       = $dir/certs/ca.crt                    # Root CA certificate
+crl               = $dir/crl/ca.crl.pem                  # Root CA CRL
+crlnumber         = $dir/crlnumber                       # Root CA CRL number
+crl_extensions    = crl_ext                              # CRL extensions
+default_crl_days  = 30                                   # Default CRL validity days
+default_md        = sha256                               # Default message digest
+preserve          = no                                   # Preserve existing extensions
+email_in_dn       = no                                   # Exclude email from the DN
+name_opt          = ca_default                           # Formatting options for names
+cert_opt          = ca_default                           # Certificate output options
+policy            = policy_strict                        # Certificate policy
+unique_subject    = no                                   # Allow multiple certs with the same DN
+x509_extensions   = v3_req                               # Extensions to add to signed certs
+
+[ policy_strict ]                                        # Policy for stricter validation
+countryName             = optional                       # Must match the issuer's country
+stateOrProvinceName     = optional                       # Must match the issuer's state
+organizationName        = optional                       # Must match the issuer's organization
+organizationalUnitName  = optional                       # Organizational unit is optional
+commonName              = supplied                       # Must provide a common name
+emailAddress            = optional                       # Email address is optional
+
+[ req ]                                                  # Request settings
+default_bits        = 2048                               # Default key size
+distinguished_name  = req_distinguished_name             # Default DN template
+string_mask         = utf8only                           # UTF-8 encoding
+default_md          = sha256                             # Default message digest
+prompt              = no                                 # Non-interactive mode
+
+[ req_distinguished_name ]                               # Template for the DN in the CSR
+countryName                     = Country Name (2 letter code)
+stateOrProvinceName             = State or Province Name (full name)
+localityName                    = Locality Name (city)
+0.organizationName              = Organization Name (company)
+organizationalUnitName          = Organizational Unit Name (section)
+commonName                      = Common Name (your domain)
+emailAddress                    = Email Address
+
+[ v3_ca ]                                           # Root CA certificate extensions
+subjectKeyIdentifier = hash                         # Subject key identifier
+authorityKeyIdentifier = keyid:always,issuer        # Authority key identifier
+basicConstraints = critical, CA:true                # Basic constraints for a CA
+keyUsage = critical, keyCertSign, cRLSign           # Key usage for a CA
+
+[ crl_ext ]                                         # CRL extensions
+authorityKeyIdentifier = keyid:always,issuer        # Authority key identifier
+
+[ v3_intermediate_ca ]
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid:always,issuer
+basicConstraints = critical, CA:true, pathlen:0
+keyUsage = critical, digitalSignature, cRLSign, keyCertSign
+
+# --- !!! ADD THIS ENTIRE SECTION !!! ---
+# Defines extensions for certificates signed by the CA (referenced by x509_extensions)
+[ v3_req ]
+basicConstraints = CA:FALSE
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid,issuer
+keyUsage = critical, digitalSignature, keyEncipherment
+extendedKeyUsage = serverAuth, clientAuth # Allows use as TLS server/client cert
+subjectAltName = @alt_names            # Use the [alt_names] section for SANs
+
+# --- !!! ADD THIS ENTIRE SECTION !!! ---
+# Defines the Subject Alternative Names (SANs)
+[ alt_names ]
+DNS.1 = localhost
+# --- IMPORTANT: Add the primary hostname for your Keycloak server ---
+# --- Replace 'your_keycloak_hostname' with the actual hostname ---
+# --- (e.g., the Common Name used in kc.csr.conf) ---
+# DNS.2 = your_keycloak_hostname
+# Add more DNS.3, DNS.4... or IP.1 = 127.0.0.1 if needed

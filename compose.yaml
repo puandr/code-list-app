@@ -1,0 +1,120 @@
+name: devdemo
+
+services:
+  idp:
+    image: quay.io/keycloak/keycloak:26.1
+    user: root
+    entrypoint: /bin/bash /setup/start-with-setup.sh
+    ports:
+      - "8864:8864"
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_LOG_LEVEL: warn
+    volumes:
+      - type: bind
+        target: /setup
+        source: keycloak-setup
+      - type: bind
+        target: /certs
+        source: kc-certs
+      - type: bind
+        target: /ca-certs
+        source: ca-certs
+    depends_on:
+      certsgen:
+        condition: service_completed_successfully
+  
+  datagen:
+    image: quay.io/keycloak/keycloak:26.1
+    user: root
+    entrypoint: '/bin/bash'
+    command:
+      - '/setup/create-db.sh'
+    volumes:
+      - type: bind
+        target: /setup
+        source: database
+      - type: volume
+        target: /db
+        source: devdata
+    working_dir: '/db'
+
+  certsgen:
+    image: docker.io/alpine/openssl:3.3.3
+    entrypoint: '/bin/sh'
+    command:
+      - '/setup/gen-certs.sh'
+    volumes:
+      - type: bind
+        target: /setup
+        source: certs-gen
+      - type: bind
+        target: /certs
+        source: certs
+      - type: bind
+        target: /ca-certs
+        source: ca-certs
+      - type: bind
+        target: /kc-certs
+        source: kc-certs
+      - type: bind
+        target: /be-certs
+        source: be-certs
+      - type: bind
+        target: /base64-certs
+        source: base64-certs
+    working_dir: '/setup'
+  
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "8080:8080"
+    environment:
+      APP_BASE64_SERVICE_URL: http://base64-service:8080
+      APP_DATA_FILE_PATH: /data/data.json
+
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: https://idp:8864/realms/sso
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_AUDIENCES: devdemo-backend
+    volumes:
+      - type: volume
+        source: devdata
+        target: /data
+        read_only: true
+    depends_on:
+      - idp
+      - datagen
+
+  base64-service:
+    build:
+      context: ./base64-service
+    environment:
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: https://idp:8864/realms/sso
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_AUDIENCES: devdemo-base64
+    depends_on:
+      - idp
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "8543:80"
+    depends_on:
+      - backend
+
+volumes:
+  devdata:
+    name: 'devdata'
+    driver: 'local'
+  certs:
+    driver: local
+  ca-certs:
+    driver: local
+  kc-certs:
+    driver: local
+  be-certs:
+    driver: local
+  base64-certs:
+    driver: local
+

@@ -1,0 +1,68 @@
+{
+    "realm": "sso",
+    "enabled": true,
+    "clients": [
+      {
+        "clientId": "devdemo-backend"
+      },
+      {
+        "clientId": "devdemo-base64"
+      }
+    ],
+    "users": [
+      {
+        "username": "testadmin",
+        "enabled": true,
+        "credentials": [
+          {
+            "type": "password",
+            "value": "test",
+            "temporary": false
+          }
+        ],
+        "realmRoles": [],
+        "clientRoles": {
+          "devdemo-backend": [
+            "admin"
+          ],
+          "devdemo-base64": [
+            "admin"
+          ]
+        }
+      },
+      {
+        "username": "test",
+        "enabled": true,
+        "credentials": [
+          {
+            "type": "password",
+            "value": "test",
+            "temporary": false
+          }
+        ],
+        "realmRoles": [],
+        "clientRoles": {
+          "devdemo-backend": [
+            "autenditud"
+          ]
+        }
+      },
+      {
+        "username": "testv",
+        "enabled": true,
+        "credentials": [
+          {
+            "type": "password",
+            "value": "test",
+            "temporary": false
+          }
+        ],
+        "realmRoles": [],
+        "clientRoles": {
+          "devdemo-backend": [
+            "kasutaja"
+          ]
+        }
+      }
+    ]
+  }

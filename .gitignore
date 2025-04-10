@@ -1,0 +1,9 @@
+# Ignore environment configuration files containing secrets
+.env
+
+/certs/
+/ca-certs/
+/kc-certs/
+/be-certs/
+/base64-certs/
+/certs-old/

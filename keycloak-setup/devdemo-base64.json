@@ -1,0 +1,21 @@
+{
+  "clientId": "devdemo-base64",
+  "secret": "Vpi@HANNC0enPE8C/%iy",
+  "enabled": true,
+  "baseUrl": "http://localhost:8544/",
+  "directAccessGrantsEnabled": false,
+  "frontchannelLogout": true,
+  "implicitFlowEnabled": false,
+  "name": "Proovitöö base64 mikroteenus",
+  "protocol": "openid-connect",
+  "publicClient": false,
+  "redirectUris": [
+    "http://localhost:8544/+"
+  ],
+  "rootUrl": "http://localhost:8544/",
+  "serviceAccountsEnabled": false,
+  "standardFlowEnabled": true,
+  "webOrigins": [
+    "http://localhost:8543/"
+  ]
+}

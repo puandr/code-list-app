@@ -1,0 +1,21 @@
+{
+  "clientId": "devdemo-backend",
+  "secret": "Iqw67E+K8&G$vJkOonvT",
+  "enabled": true,
+  "baseUrl": "http://localhost:8543/",
+  "directAccessGrantsEnabled": false,
+  "frontchannelLogout": true,
+  "implicitFlowEnabled": false,
+  "name": "Proovitöö tagarakendus",
+  "protocol": "openid-connect",
+  "publicClient": false,
+  "redirectUris": [
+    "http://localhost:8543/+"
+  ],
+  "rootUrl": "http://localhost:8543/",
+  "serviceAccountsEnabled": true,
+  "standardFlowEnabled": true,
+  "webOrigins": [
+    "http://localhost:8543/"
+  ]
+}
